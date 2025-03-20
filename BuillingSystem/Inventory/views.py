@@ -4,6 +4,30 @@ from .models import *
 
 class ProductsView(APIView):
 
+    def get(self, request):
+
+        all_products = Products.objects.all()
+
+        products_datas =[]
+
+        for products in all_products:
+
+            single_product = {
+                "id": products.id,
+                "product_name": products.products_name,
+                "code": products.code,
+                "price": products.price
+            }
+
+            products_datas.append(single_product)
+
+    
+
+        return Response(products_datas)
+
+
+
+
     def post(self, request):
 
         new_product = Products(products_name = request.data["product_name"], code= request.data['code'], price = request.data['price'])
@@ -11,3 +35,37 @@ class ProductsView(APIView):
         new_product.save()
 
         return Response("Data Saved")
+    
+
+
+class ProductViewById(APIView):
+        
+    def get(self, request, id):
+
+        product = Products.objects.get(id = id)
+
+
+        single_product = {
+            "id": product.id,
+            "product_name": product.products_name,
+            "code": product.code,
+            "price": product.price
+            }
+
+        return Response(single_product)
+    
+    def patch(self, request, id):
+
+        product = Products.objects.filter(id = id)
+
+        product.update(products_name = request.data["product_name"], code= request.data['code'], price = request.data['price'])
+        
+        return Response("updated")
+    
+    def delete(self, request, id):
+
+        product = Products.objects.filter(id = id)
+
+        product.delete()
+
+        return Response("Deleted")
